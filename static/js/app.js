@@ -3,7 +3,7 @@
 // =============================================================
 
 // Dirección del backend de Spring Boot
-const API_URL = "http://localhost:8081/productos";
+const API_URL = "https://inventariobackend-production-23e3.up.railway.app/productos";
 
 
 // Variable que guarda el ID del producto que estamos editando
