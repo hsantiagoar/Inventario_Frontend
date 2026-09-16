@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gestión de Productos - Sistema de Inventario</title>
+
+
+    <!-- =====================================================
+         BOOTSTRAP 5
+         ===================================================== -->
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+
+    <!-- =====================================================
+         FONT AWESOME
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+    <!-- =====================================================
+         CSS PROPIO
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/estilos.css">
+
+</head>
+
+
+<body class="bg-light">
+
+
+    <!-- =====================================================
+         ENCABEZADO PRINCIPAL
+         ===================================================== -->
+
+    <header class="bg-info text-white text-center py-4 shadow-sm">
+
+        <div class="container">
+
+            <h1 class="fw-bold m-0">
+
+                <i class="fa-solid fa-boxes-stacked me-2"></i>
+
+                Sistema de Inventario
+
+            </h1>
+
+            <p class="lead m-0 opacity-75">
+
+                Gestión y Control de Productos
+
+            </p>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MENÚ DE NAVEGACIÓN
+         ===================================================== -->
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary mb-4 shadow-sm">
+
+        <div class="container">
+
+
+            <!-- Botón para dispositivos pequeños -->
+
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#menuNavegacion">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+
+            <div
+                class="collapse navbar-collapse justify-content-center"
+                id="menuNavegacion">
+
+
+                <ul class="navbar-nav gap-3">
+
+
+                    <!-- Inicio -->
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="index.html">
+
+                            <i class="fa-solid fa-house me-1"></i>
+
+                            Inicio
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- Gestión de productos -->
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link active fw-bold"
+                            href="productos.html">
+
+                            <i class="fa-solid fa-list-check me-1"></i>
+
+                            Gestión de Productos
+
+                        </a>
+
+                    </li>
+
+
+                    <!-- Registrar producto -->
+
+                    <li class="nav-item">
+
+                        <a
+                            class="nav-link"
+                            href="registrar.html">
+
+                            <i class="fa-solid fa-plus me-1"></i>
+
+                            Registrar Producto
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =====================================================
+         CONTENEDOR PRINCIPAL
+         ===================================================== -->
+
+    <main class="container my-4">
+
+
+        <!-- =================================================
+             MENSAJES DE ALERTA
+             ================================================= -->
+
+        <div id="alertaMensaje"></div>
+
+
+
+        <!-- =================================================
+             FORMULARIO DE REGISTRO / ACTUALIZACIÓN
+             ================================================= -->
+
+        <section
+            class="card border-0 shadow-sm rounded-3 p-4 mb-4 bg-white">
+
+
+            <!-- Título del formulario -->
+
+            <h2
+                class="h4 text-info fw-bold mb-3 border-bottom pb-2"
+                id="formTitulo">
+
+                <i class="fa-solid fa-pen-to-square me-2"></i>
+
+                Registrar Producto
+
+            </h2>
+
+
+
+            <!-- Formulario -->
+
+            <form id="formProducto">
+
+
+                <div class="row g-3">
+
+
+                    <!-- =================================================
+                         CÓDIGO
+                         ================================================= -->
+
+                    <div class="col-12 col-md-4">
+
+                        <label
+                            for="codigo"
+                            class="form-label fw-semibold text-secondary">
+
+                            Código:
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="codigo"
+                            name="codigo"
+                            placeholder="Ej: P001"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         NOMBRE
+                         ================================================= -->
+
+                    <div class="col-12 col-md-4">
+
+                        <label
+                            for="nombre"
+                            class="form-label fw-semibold text-secondary">
+
+                            Nombre:
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="nombre"
+                            name="nombre"
+                            placeholder="Ej: Procesador Intel i5"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         CATEGORÍA
+                         ================================================= -->
+
+                    <div class="col-12 col-md-4">
+
+                        <label
+                            for="categoria"
+                            class="form-label fw-semibold text-secondary">
+
+                            Categoría:
+
+                        </label>
+
+                        <select
+                            class="form-select"
+                            id="categoria"
+                            name="categoria"
+                            required>
+
+                            <option value="">
+                                Seleccione...
+                            </option>
+
+                            <option value="Tecnología">
+                                Tecnología
+                            </option>
+
+                            <option value="Papelería">
+                                Papelería
+                            </option>
+
+                            <option value="Accesorios">
+                                Accesorios
+                            </option>
+
+                            <option value="Otros">
+                                Otros
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         PROVEEDOR
+                         ================================================= -->
+
+                    <div class="col-12 col-md-4">
+
+                        <label
+                            for="proveedor"
+                            class="form-label fw-semibold text-secondary">
+
+                            Proveedor:
+
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="proveedor"
+                            name="proveedor"
+                            placeholder="Ej: Tecno SAS"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         PRECIO
+                         ================================================= -->
+
+                    <div class="col-12 col-md-4">
+
+                        <label
+                            for="precio"
+                            class="form-label fw-semibold text-secondary">
+
+                            Precio ($):
+
+                        </label>
+
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                $
+                            </span>
+
+                            <input
+                                type="number"
+                                class="form-control"
+                                id="precio"
+                                name="precio"
+                                step="0.01"
+                                min="0"
+                                placeholder="0.00"
+                                required>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         CANTIDAD
+                         ================================================= -->
+
+                    <div class="col-12 col-md-4">
+
+                        <label
+                            for="cantidad"
+                            class="form-label fw-semibold text-secondary">
+
+                            Cantidad:
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="cantidad"
+                            name="cantidad"
+                            min="0"
+                            placeholder="0"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         STOCK MÍNIMO
+                         ================================================= -->
+
+                    <div class="col-12 col-md-4">
+
+                        <label
+                            for="stock_minimo"
+                            class="form-label fw-semibold text-secondary">
+
+                            Stock mínimo:
+
+                        </label>
+
+                        <input
+                            type="number"
+                            class="form-control"
+                            id="stock_minimo"
+                            name="stock_minimo"
+                            min="0"
+                            placeholder="Ej: 5"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     BOTONES DEL FORMULARIO
+                     ================================================= -->
+
+                <div class="mt-4 d-flex gap-2">
+
+
+                    <!-- Guardar -->
+
+                    <button
+                        type="submit"
+                        id="btnGuardar"
+                        class="btn btn-info fw-semibold text-white">
+
+                        <i class="fa-solid fa-floppy-disk me-1"></i>
+
+                        Guardar Producto
+
+                    </button>
+
+
+
+                    <!-- Cancelar / Limpiar -->
+
+                    <button
+                        type="button"
+                        id="btnCancelar"
+                        class="btn btn-outline-secondary text-secondary"
+                        onclick="cancelarEdicion()">
+
+                        <i class="fa-solid fa-rotate-left me-1"></i>
+
+                        Limpiar / Cancelar
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             LISTA DE PRODUCTOS
+             ===================================================== -->
+
+        <section
+            class="card border-0 shadow-sm rounded-3 p-4 bg-white">
+
+
+            <!-- Título -->
+
+            <h2 class="h4 text-info fw-bold mb-3 border-bottom pb-2">
+
+                <i class="fa-solid fa-list me-2"></i>
+
+                Lista de Productos
+
+            </h2>
+
+            <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <div class="row g-2 align-items-center">
+            <div class="col-auto">
+                <label for="buscarId" class="col-form-label fw-bold">Buscar por ID:</label>
+            </div>
+            <div class="col-auto">
+                <input type="number" id="buscarId" class="form-control" placeholder="Ej: 1" min="1">
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-primary" onclick="buscarProductoPorId()">
+                    <i class="fa-solid fa-magnifying-glass me-1"></i> Buscar
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="limpiarBusqueda()">
+                    <i class="fa-solid fa-rotate-left me-1"></i> Ver Todos
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- =================================================
+                 TABLA
+                 ================================================= -->
+
+            <div class="table-responsive">
+
+                <table
+                    class="table table-bordered table-hover text-center align-middle">
+
+
+                    <!-- Encabezado -->
+
+                    <thead class="table-secondary">
+
+                        <tr>
+
+                            <th>ID</th>
+
+                            <th>Código</th>
+
+                            <th>Nombre</th>
+
+                            <th>Categoría</th>
+
+                            <th>Proveedor</th>
+
+                            <th>Precio</th>
+
+                            <th>Cantidad</th>
+
+                            <th>Stock mínimo</th>
+
+                            <th>Acciones</th>
+
+                        </tr>
+
+                    </thead>
+
+
+
+                    <!-- Productos -->
+
+                    <tbody id="tablaProductos">
+
+                        <!-- JavaScript cargará los productos aquí -->
+
+                    </tbody>
+
+
+                </table>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 VALOR TOTAL DEL INVENTARIO
+                 ================================================= -->
+
+            <div class="text-end mt-4">
+
+                <h5 class="fw-bold text-success">
+
+                    Valor Total Inventario:
+
+                    <span id="totalInventario">
+
+                        $0
+
+                    </span>
+
+                </h5>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         PIE DE PÁGINA
+         ===================================================== -->
+
+    <footer
+        class="bg-dark text-white text-center py-4 mt-5">
+
+        <div class="container">
+
+            <p class="m-0">
+
+                Sistema de Inventario &copy; 2026
+
+            </p>
+
+            <small class="text-secondary">
+
+                Tecnología en Desarrollo de Software 3233929
+
+            </small>
+
+        </div>
+
+    </footer>
+
+
+
+    <!-- =====================================================
+         BOOTSTRAP JS
+         ===================================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT PROPIO
+         ===================================================== -->
+
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>
