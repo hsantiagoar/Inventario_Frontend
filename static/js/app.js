@@ -373,10 +373,10 @@ function cancelarEdicion() {
 
 
 // =============================================================
-// BUSCAR PRODUCTO POR ID (GET /productos/{id})
+// BUSCAR PRODUCTO POR NOMBRE (GET /productos/buscar/{nombre})
 // =============================================================
 
-async function buscarProductoPorId() {
+async function buscarProductoPorNombre() {
     const inputNombre = document.getElementById("buscarNombre");
     if (!inputNombre) return;
 
@@ -388,77 +388,78 @@ async function buscarProductoPorId() {
     }
 
     try {
-        const respuesta = await fetch(`${API_URL}/${nombre}`);
+        const respuesta = await fetch(`${API_URL}/buscar/${encodeURIComponent(nombre)}`);
 
         if (!respuesta.ok) {
-            alert(`No se encontró ningún producto con el nombre ${nombre}`);
+            alert(`No se encontraron productos con el nombre "${nombre}"`);
             return;
         }
 
-        const producto = await respuesta.json();
-        const tabla = document.getElementByNombre("tablaProductos");
+        const productos = await respuesta.json();
+        const tabla = document.getElementById("tablaProductos");
         if (!tabla) return;
 
-        if (!producto || !producto.nombre) {
-            alert(`No se encontró ningún producto con el nombre ${nombre}`);
+        if (productos.length === 0) {
+            alert(`No se encontraron productos con el nombre "${nombre}"`);
             return;
         }
 
-        const stockMinimo = producto.stock_minimo ?? producto.stockMinimo ?? 0;
+        // Limpiamos y renderizamos los productos encontrados
+        tabla.innerHTML = "";
+        let totalInventario = 0;
 
-        tabla.innerHTML = `
-            <tr>
-                <!-- 1. ID -->
-                <td>${producto.id}</td>
+        productos.forEach(producto => {
+            totalInventario += producto.precio * producto.cantidad;
+            const stockMinimo = producto.stock_minimo ?? producto.stockMinimo ?? 0;
 
-                <!-- 2. Código -->
-                <td>${producto.codigo}</td>
+            tabla.innerHTML += `
+                <tr>
+                    <td>${producto.id}</td>
+                    <td>${producto.codigo}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.categoria || 'N/A'}</td>
+                    <td>${producto.proveedor || 'N/A'}</td>
+                    <td>$${Number(producto.precio).toLocaleString("es-CO")}</td>
+                    <td>${producto.cantidad}</td>
+                    <td>${stockMinimo}</td>
+                    <td>${producto.marca || 'N/A'}</td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm mb-1" onclick="editarProducto(${producto.id})">
+                            <i class="fa-solid fa-pen"></i> Actualizar
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm mb-1" onclick="eliminarProducto(${producto.id})">
+                            <i class="fa-solid fa-trash"></i> Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
 
-                <!-- 3. Nombre -->
-                <td>${producto.nombre}</td>
+        const total = document.getElementById("totalInventario");
+        if (total) {
+            total.textContent = "$" + totalInventario.toLocaleString("es-CO");
+        }
 
-                <!-- 4. Categoría -->
-                <td>${producto.categoria || 'N/A'}</td>
-
-                <!-- 5. Proveedor -->
-                <td>${producto.proveedor || 'N/A'}</td>
-
-                <!-- 6. Precio -->
-                <td>$${Number(producto.precio).toLocaleString("es-CO")}</td>
-
-                <!-- 7. Cantidad -->
-                <td>${producto.cantidad}</td>
-
-                <!-- 8. Stock mínimo -->
-                <td>${stockMinimo}</td>
-
-                <!-- 9. Marca -->
-                <td>${producto.marca || 'N/A'}</td>
-
-                <!-- 10. Acciones -->
-                <td>
-                    <button class="btn btn-warning btn-sm mb-1" onclick="editarProducto(${producto.id})">
-                        <i class="fa-solid fa-pen"></i> Actualizar
-                    </button>
-                    <button class="btn btn-danger btn-sm mb-1" onclick="eliminarProducto(${producto.id})">
-                        <i class="fa-solid fa-trash"></i> Eliminar
-                    </button>
-                </td>
-            </tr>
-        `;
     } catch (error) {
-        console.error("Error al buscar producto:", error);
+        console.error("Error al buscar producto por nombre:", error);
         alert("Ocurrió un error al consultar el producto.");
     }
 }
 
+
+// =============================================================
+// LIMPIAR BÚSQUEDA / VER TODOS
+// =============================================================
+
 function limpiarBusqueda() {
-    const inputId = document.getElementById("buscarId");
-    if (inputId) inputId.value = "";
+    const inputNombre = document.getElementById("buscarNombre");
+    if (inputNombre) inputNombre.value = "";
     cargarProductos();
 }
+
 
 // =============================================================
 // INICIAR CARGA DE PRODUCTOS
 // =============================================================
+
 cargarProductos();
