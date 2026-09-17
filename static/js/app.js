@@ -70,39 +70,39 @@ async function cargarProductos() {
 
 
             // =================================================
-            // AGREGAR PRODUCTO A LA TABLA
+            // AGREGAR PRODUCTO A LA TABLA (ORDEN CORREGIDO)
             // =================================================
             tabla.innerHTML += `
                 <tr>
 
-                    <!-- ID -->
+                    <!-- 1. ID -->
                     <td>${producto.id}</td>
 
-                    <!-- Código -->
+                    <!-- 2. Código -->
                     <td>${producto.codigo}</td>
 
-                    <!-- Nombre -->
+                    <!-- 3. Nombre -->
                     <td>${producto.nombre}</td>
 
-                    <!-- Categoría -->
+                    <!-- 4. Categoría -->
                     <td>${producto.categoria || 'N/A'}</td>
 
-                    <!-- Marca -->
-                    <td>${producto.marca || 'N/A'}</td>
-
-                    <!-- Proveedor -->
+                    <!-- 5. Proveedor -->
                     <td>${producto.proveedor || 'N/A'}</td>
 
-                    <!-- Precio -->
+                    <!-- 6. Precio -->
                     <td>$${Number(producto.precio).toLocaleString("es-CO")}</td>
 
-                    <!-- Cantidad -->
+                    <!-- 7. Cantidad -->
                     <td>${producto.cantidad}</td>
 
-                    <!-- Stock mínimo -->
+                    <!-- 8. Stock mínimo -->
                     <td>${stockMinimo}</td>
 
-                    <!-- Acciones -->
+                    <!-- 9. Marca -->
+                    <td>${producto.marca || 'N/A'}</td>
+
+                    <!-- 10. Acciones -->
                     <td>
                         <!-- Botón actualizar -->
                         <button
@@ -163,11 +163,11 @@ if (formProducto) {
             codigo: document.getElementById("codigo").value,
             nombre: document.getElementById("nombre").value,
             categoria: document.getElementById("categoria").value,
-            marca: document.getElementById("marca") ? document.getElementById("marca").value : "",
             proveedor: document.getElementById("proveedor").value,
             precio: parseFloat(document.getElementById("precio").value),
             cantidad: parseInt(document.getElementById("cantidad").value),
-            stock_minimo: parseInt(document.getElementById("stock_minimo").value)
+            stock_minimo: parseInt(document.getElementById("stock_minimo").value),
+            marca: document.getElementById("marca") ? document.getElementById("marca").value : ""
         };
 
         // =================================================
@@ -194,6 +194,7 @@ if (formProducto) {
             if (respuesta.ok) {
                 alert("Producto registrado correctamente");
                 formProducto.reset();
+                cancelarEdicion();
                 cargarProductos();
 
                 if (window.location.pathname.includes("registrar.html")) {
@@ -237,10 +238,10 @@ async function editarProducto(id) {
         if (document.getElementById("codigo")) document.getElementById("codigo").value = producto.codigo || "";
         if (document.getElementById("nombre")) document.getElementById("nombre").value = producto.nombre || "";
         if (document.getElementById("categoria")) document.getElementById("categoria").value = producto.categoria || "";
-        if (document.getElementById("marca")) document.getElementById("marca").value = producto.marca || "";
         if (document.getElementById("proveedor")) document.getElementById("proveedor").value = producto.proveedor || "";
         if (document.getElementById("precio")) document.getElementById("precio").value = producto.precio || 0;
         if (document.getElementById("cantidad")) document.getElementById("cantidad").value = producto.cantidad || 0;
+        if (document.getElementById("marca")) document.getElementById("marca").value = producto.marca || "";
 
         const stockMinimo = producto.stock_minimo ?? producto.stockMinimo ?? 0;
         if (document.getElementById("stock_minimo")) document.getElementById("stock_minimo").value = stockMinimo;
@@ -282,11 +283,11 @@ async function actualizarProducto() {
             codigo: document.getElementById("codigo").value,
             nombre: document.getElementById("nombre").value,
             categoria: document.getElementById("categoria").value,
-            marca: document.getElementById("marca") ? document.getElementById("marca").value : "",
             proveedor: document.getElementById("proveedor").value,
             precio: parseFloat(document.getElementById("precio").value),
             cantidad: parseInt(document.getElementById("cantidad").value),
-            stock_minimo: parseInt(document.getElementById("stock_minimo").value)
+            stock_minimo: parseInt(document.getElementById("stock_minimo").value),
+            marca: document.getElementById("marca") ? document.getElementById("marca").value : ""
         };
 
         const respuesta = await fetch(`${API_URL}/${idProductoEditando}`, {
@@ -354,6 +355,10 @@ function cancelarEdicion() {
 
     idProductoEditando = null;
 
+    if (document.getElementById("marca")) {
+        document.getElementById("marca").value = "";
+    }
+
     const titulo = document.getElementById("formTitulo");
     if (titulo) {
         titulo.innerHTML = `<i class="fa-solid fa-pen-to-square me-2"></i> Registrar Producto`;
@@ -403,15 +408,34 @@ async function buscarProductoPorId() {
 
         tabla.innerHTML = `
             <tr>
+                <!-- 1. ID -->
                 <td>${producto.id}</td>
+
+                <!-- 2. Código -->
                 <td>${producto.codigo}</td>
+
+                <!-- 3. Nombre -->
                 <td>${producto.nombre}</td>
+
+                <!-- 4. Categoría -->
                 <td>${producto.categoria || 'N/A'}</td>
-                <td>${producto.marca || 'N/A'}</td>
+
+                <!-- 5. Proveedor -->
                 <td>${producto.proveedor || 'N/A'}</td>
+
+                <!-- 6. Precio -->
                 <td>$${Number(producto.precio).toLocaleString("es-CO")}</td>
+
+                <!-- 7. Cantidad -->
                 <td>${producto.cantidad}</td>
+
+                <!-- 8. Stock mínimo -->
                 <td>${stockMinimo}</td>
+
+                <!-- 9. Marca -->
+                <td>${producto.marca || 'N/A'}</td>
+
+                <!-- 10. Acciones -->
                 <td>
                     <button class="btn btn-warning btn-sm mb-1" onclick="editarProducto(${producto.id})">
                         <i class="fa-solid fa-pen"></i> Actualizar
