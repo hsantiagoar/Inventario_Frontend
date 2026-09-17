@@ -43,9 +43,6 @@ async function cargarProductos() {
         // =====================================================
         // LIMPIAR TABLA
         // =====================================================
-
-        // Esto es MUY IMPORTANTE.
-        // Evita que los productos se repitan.
         tabla.innerHTML = "";
 
 
@@ -60,17 +57,12 @@ async function cargarProductos() {
         productos.forEach(producto => {
 
             // Calculamos el valor del inventario
-            // Precio × cantidad
-            totalInventario +=
-                producto.precio * producto.cantidad;
+            totalInventario += producto.precio * producto.cantidad;
 
 
             // =================================================
             // STOCK MÍNIMO
             // =================================================
-
-            // Si Java devuelve stock_minimo usamos ese.
-            // Si devuelve stockMinimo usamos ese.
             const stockMinimo =
                 producto.stock_minimo ??
                 producto.stockMinimo ??
@@ -80,87 +72,53 @@ async function cargarProductos() {
             // =================================================
             // AGREGAR PRODUCTO A LA TABLA
             // =================================================
-
             tabla.innerHTML += `
                 <tr>
 
                     <!-- ID -->
-                    <td>
-                        ${producto.id}
-                    </td>
-
+                    <td>${producto.id}</td>
 
                     <!-- Código -->
-                    <td>
-                        ${producto.codigo}
-                    </td>
-
+                    <td>${producto.codigo}</td>
 
                     <!-- Nombre -->
-                    <td>
-                        ${producto.nombre}
-                    </td>
-
+                    <td>${producto.nombre}</td>
 
                     <!-- Categoría -->
-                    <td>
-                        ${producto.categoria}
-                    </td>
+                    <td>${producto.categoria || 'N/A'}</td>
 
+                    <!-- Marca -->
+                    <td>${producto.marca || 'N/A'}</td>
 
                     <!-- Proveedor -->
-                    <td>
-                        ${producto.proveedor}
-                    </td>
-
+                    <td>${producto.proveedor || 'N/A'}</td>
 
                     <!-- Precio -->
-                    <td>
-                        $${Number(producto.precio)
-                            .toLocaleString("es-CO")}
-                    </td>
-
+                    <td>$${Number(producto.precio).toLocaleString("es-CO")}</td>
 
                     <!-- Cantidad -->
-                    <td>
-                        ${producto.cantidad}
-                    </td>
-
+                    <td>${producto.cantidad}</td>
 
                     <!-- Stock mínimo -->
-                    <td>
-                        ${stockMinimo}
-                    </td>
-
+                    <td>${stockMinimo}</td>
 
                     <!-- Acciones -->
                     <td>
-
                         <!-- Botón actualizar -->
                         <button
                             type="button"
                             class="btn btn-warning btn-sm mb-1"
                             onclick="editarProducto(${producto.id})">
-
-                            <i class="fa-solid fa-pen"></i>
-
-                            Actualizar
-
+                            <i class="fa-solid fa-pen"></i> Actualizar
                         </button>
-
 
                         <!-- Botón eliminar -->
                         <button
                             type="button"
                             class="btn btn-danger btn-sm mb-1"
                             onclick="eliminarProducto(${producto.id})">
-
-                            <i class="fa-solid fa-trash"></i>
-
-                            Eliminar
-
+                            <i class="fa-solid fa-trash"></i> Eliminar
                         </button>
-
                     </td>
 
                 </tr>
@@ -172,26 +130,14 @@ async function cargarProductos() {
         // =====================================================
         // MOSTRAR VALOR TOTAL DEL INVENTARIO
         // =====================================================
-
-        const total =
-            document.getElementById("totalInventario");
-
-
+        const total = document.getElementById("totalInventario");
         if (total) {
-
-            total.textContent =
-                "$" + totalInventario.toLocaleString("es-CO");
-
+            total.textContent = "$" + totalInventario.toLocaleString("es-CO");
         }
 
 
     } catch (error) {
-
-        console.error(
-            "Error al cargar productos:",
-            error
-        );
-
+        console.error("Error al cargar productos:", error);
     }
 
 }
@@ -201,142 +147,68 @@ async function cargarProductos() {
 // POST - REGISTRAR PRODUCTO
 // =============================================================
 
-const formProducto =
-    document.getElementById("formProducto");
-
+const formProducto = document.getElementById("formProducto");
 
 if (formProducto) {
 
-    formProducto.addEventListener(
-        "submit",
-        async function(event) {
+    formProducto.addEventListener("submit", async function(event) {
 
-            // Evitamos que el formulario recargue la página
-            event.preventDefault();
+        // Evitamos que el formulario recargue la página
+        event.preventDefault();
 
+        // =================================================
+        // OBTENER DATOS DEL FORMULARIO
+        // =================================================
+        const producto = {
+            codigo: document.getElementById("codigo").value,
+            nombre: document.getElementById("nombre").value,
+            categoria: document.getElementById("categoria").value,
+            marca: document.getElementById("marca") ? document.getElementById("marca").value : "",
+            proveedor: document.getElementById("proveedor").value,
+            precio: parseFloat(document.getElementById("precio").value),
+            cantidad: parseInt(document.getElementById("cantidad").value),
+            stock_minimo: parseInt(document.getElementById("stock_minimo").value)
+        };
 
-            // =================================================
-            // OBTENER DATOS DEL FORMULARIO
-            // =================================================
-
-            const producto = {
-
-                codigo:
-                    document.getElementById("codigo").value,
-
-                nombre:
-                    document.getElementById("nombre").value,
-
-                categoria:
-                    document.getElementById("categoria").value,
-
-                proveedor:
-                    document.getElementById("proveedor").value,
-
-                precio:
-                    parseFloat(
-                        document.getElementById("precio").value
-                    ),
-
-                cantidad:
-                    parseInt(
-                        document.getElementById("cantidad").value
-                    ),
-
-                stock_minimo:
-                    parseInt(
-                        document.getElementById("stock_minimo").value
-                    )
-            };
-
-
-            // =================================================
-            // SI HAY UN ID, ESTAMOS ACTUALIZANDO
-            // =================================================
-
-            if (idProductoEditando !== null) {
-
-                await actualizarProducto();
-
-                return;
-            }
-
-
-            // =================================================
-            // REGISTRAR PRODUCTO
-            // =================================================
-
-            try {
-
-                const respuesta =
-                    await fetch(API_URL, {
-
-                        method: "POST",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body:
-                            JSON.stringify(producto)
-
-                    });
-
-
-                if (respuesta.ok) {
-
-                    alert(
-                        "Producto registrado correctamente"
-                    );
-
-
-                    // Limpiamos formulario
-                    formProducto.reset();
-
-
-                    // Volvemos a cargar la tabla
-                    cargarProductos();
-
-
-                    // Si estamos en registrar.html
-                    // vamos a productos.html
-                    if (
-                        window.location.pathname
-                            .includes("registrar.html")
-                    ) {
-
-                        window.location.href =
-                            "productos.html";
-
-                    }
-
-
-                } else {
-
-                    alert(
-                        "No fue posible registrar el producto"
-                    );
-
-                }
-
-
-            } catch (error) {
-
-                console.error(
-                    "Error en la conexión:",
-                    error
-                );
-
-
-                alert(
-                    "No se pudo conectar con el servidor backend"
-                );
-
-            }
-
+        // =================================================
+        // SI HAY UN ID, ESTAMOS ACTUALIZANDO
+        // =================================================
+        if (idProductoEditando !== null) {
+            await actualizarProducto();
+            return;
         }
-    );
+
+        // =================================================
+        // REGISTRAR PRODUCTO
+        // =================================================
+        try {
+
+            const respuesta = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(producto)
+            });
+
+            if (respuesta.ok) {
+                alert("Producto registrado correctamente");
+                formProducto.reset();
+                cargarProductos();
+
+                if (window.location.pathname.includes("registrar.html")) {
+                    window.location.href = "productos.html";
+                }
+            } else {
+                alert("No fue posible registrar el producto");
+            }
+
+        } catch (error) {
+            console.error("Error en la conexión:", error);
+            alert("No se pudo conectar con el servidor backend");
+        }
+
+    });
 
 }
 
@@ -349,108 +221,50 @@ async function editarProducto(id) {
 
     try {
 
-        // Buscamos el producto por ID
-        const respuesta =
-            await fetch(`${API_URL}/${id}`);
-
+        const respuesta = await fetch(`${API_URL}/${id}`);
 
         if (!respuesta.ok) {
-
-            alert(
-                "No fue posible obtener el producto"
-            );
-
+            alert("No fue posible obtener el producto");
             return;
         }
 
-
-        // Convertimos a JSON
-        const producto =
-            await respuesta.json();
-
-
-        // Guardamos el ID que estamos editando
+        const producto = await respuesta.json();
         idProductoEditando = id;
-
 
         // =====================================================
         // CARGAR DATOS EN EL FORMULARIO
         // =====================================================
+        if (document.getElementById("codigo")) document.getElementById("codigo").value = producto.codigo || "";
+        if (document.getElementById("nombre")) document.getElementById("nombre").value = producto.nombre || "";
+        if (document.getElementById("categoria")) document.getElementById("categoria").value = producto.categoria || "";
+        if (document.getElementById("marca")) document.getElementById("marca").value = producto.marca || "";
+        if (document.getElementById("proveedor")) document.getElementById("proveedor").value = producto.proveedor || "";
+        if (document.getElementById("precio")) document.getElementById("precio").value = producto.precio || 0;
+        if (document.getElementById("cantidad")) document.getElementById("cantidad").value = producto.cantidad || 0;
 
-        document.getElementById("codigo").value =
-            producto.codigo;
-
-        document.getElementById("nombre").value =
-            producto.nombre;
-
-        document.getElementById("categoria").value =
-            producto.categoria;
-
-        document.getElementById("proveedor").value =
-            producto.proveedor;
-
-        document.getElementById("precio").value =
-            producto.precio;
-
-        document.getElementById("cantidad").value =
-            producto.cantidad;
-
-
-        // Stock mínimo
-        const stockMinimo =
-            producto.stock_minimo ??
-            producto.stockMinimo ??
-            0;
-
-        document.getElementById("stock_minimo").value =
-            stockMinimo;
-
+        const stockMinimo = producto.stock_minimo ?? producto.stockMinimo ?? 0;
+        if (document.getElementById("stock_minimo")) document.getElementById("stock_minimo").value = stockMinimo;
 
         // =====================================================
         // CAMBIAR TÍTULO Y BOTÓN
         // =====================================================
-
-        const titulo =
-            document.getElementById("formTitulo");
-
+        const titulo = document.getElementById("formTitulo");
         if (titulo) {
-
-            titulo.innerHTML =
-                `<i class="fa-solid fa-pen-to-square me-2"></i>
-                 Actualizar Producto`;
-
+            titulo.innerHTML = `<i class="fa-solid fa-pen-to-square me-2"></i> Actualizar Producto`;
         }
 
-
-        const boton =
-            document.getElementById("btnGuardar");
-
+        const boton = document.getElementById("btnGuardar");
         if (boton) {
-
-            boton.innerHTML =
-                `<i class="fa-solid fa-pen me-1"></i>
-                 Actualizar Producto`;
-
+            boton.innerHTML = `<i class="fa-solid fa-pen me-1"></i> Actualizar Producto`;
         }
 
-
-        // Subimos hasta el formulario
-        formProducto.scrollIntoView({
-            behavior: "smooth"
-        });
-
+        if (formProducto) {
+            formProducto.scrollIntoView({ behavior: "smooth" });
+        }
 
     } catch (error) {
-
-        console.error(
-            "Error al obtener producto:",
-            error
-        );
-
-        alert(
-            "No se pudo obtener el producto"
-        );
-
+        console.error("Error al obtener producto:", error);
+        alert("No se pudo obtener el producto");
     }
 
 }
@@ -464,97 +278,36 @@ async function actualizarProducto() {
 
     try {
 
-        // Obtenemos los datos actuales del formulario
         const productoActualizado = {
-
-            codigo:
-                document.getElementById("codigo").value,
-
-            nombre:
-                document.getElementById("nombre").value,
-
-            categoria:
-                document.getElementById("categoria").value,
-
-            proveedor:
-                document.getElementById("proveedor").value,
-
-            precio:
-                parseFloat(
-                    document.getElementById("precio").value
-                ),
-
-            cantidad:
-                parseInt(
-                    document.getElementById("cantidad").value
-                ),
-
-            stock_minimo:
-                parseInt(
-                    document.getElementById("stock_minimo").value
-                )
-
+            codigo: document.getElementById("codigo").value,
+            nombre: document.getElementById("nombre").value,
+            categoria: document.getElementById("categoria").value,
+            marca: document.getElementById("marca") ? document.getElementById("marca").value : "",
+            proveedor: document.getElementById("proveedor").value,
+            precio: parseFloat(document.getElementById("precio").value),
+            cantidad: parseInt(document.getElementById("cantidad").value),
+            stock_minimo: parseInt(document.getElementById("stock_minimo").value)
         };
 
-
-        // Enviamos los cambios al backend
-        const respuesta =
-            await fetch(
-                `${API_URL}/${idProductoEditando}`,
-                {
-
-                    method: "PUT",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(
-                            productoActualizado
-                        )
-
-                }
-            );
-
+        const respuesta = await fetch(`${API_URL}/${idProductoEditando}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(productoActualizado)
+        });
 
         if (respuesta.ok) {
-
-            alert(
-                "Producto actualizado correctamente"
-            );
-
-
-            // Limpiamos el formulario
+            alert("Producto actualizado correctamente");
             cancelarEdicion();
-
-
-            // Recargamos la tabla
             cargarProductos();
-
-
         } else {
-
-            alert(
-                "No fue posible actualizar el producto"
-            );
-
+            alert("No fue posible actualizar el producto");
         }
 
-
     } catch (error) {
-
-        console.error(
-            "Error al actualizar producto:",
-            error
-        );
-
-
-        alert(
-            "No se pudo conectar con el servidor"
-        );
-
+        console.error("Error al actualizar producto:", error);
+        alert("No se pudo conectar con el servidor");
     }
 
 }
@@ -566,63 +319,24 @@ async function actualizarProducto() {
 
 async function eliminarProducto(id) {
 
-    // Confirmación antes de eliminar
-    const confirmar =
-        confirm(
-            "¿Está seguro de que desea eliminar este producto?"
-        );
-
-
-    // Si el usuario cancela
-    if (!confirmar) {
-        return;
-    }
-
+    const confirmar = confirm("¿Está seguro de que desea eliminar este producto?");
+    if (!confirmar) return;
 
     try {
-
-        // Enviamos petición DELETE
-        const respuesta =
-            await fetch(
-                `${API_URL}/${id}`,
-                {
-                    method: "DELETE"
-                }
-            );
-
+        const respuesta = await fetch(`${API_URL}/${id}`, {
+            method: "DELETE"
+        });
 
         if (respuesta.ok) {
-
-            alert(
-                "Producto eliminado correctamente"
-            );
-
-
-            // Actualizamos la tabla
+            alert("Producto eliminado correctamente");
             cargarProductos();
-
-
         } else {
-
-            alert(
-                "No fue posible eliminar el producto"
-            );
-
+            alert("No fue posible eliminar el producto");
         }
 
-
     } catch (error) {
-
-        console.error(
-            "Error al eliminar producto:",
-            error
-        );
-
-
-        alert(
-            "No se pudo conectar con el servidor"
-        );
-
+        console.error("Error al eliminar producto:", error);
+        alert("No se pudo conectar con el servidor");
     }
 
 }
@@ -634,59 +348,33 @@ async function eliminarProducto(id) {
 
 function cancelarEdicion() {
 
-    // Reiniciamos el formulario
     if (formProducto) {
-
         formProducto.reset();
-
     }
 
-
-    // Quitamos el ID de edición
     idProductoEditando = null;
 
-
-    // Restauramos el título
-    const titulo =
-        document.getElementById("formTitulo");
-
-
+    const titulo = document.getElementById("formTitulo");
     if (titulo) {
-
-        titulo.innerHTML =
-            `<i class="fa-solid fa-pen-to-square me-2"></i>
-             Registrar Producto`;
-
+        titulo.innerHTML = `<i class="fa-solid fa-pen-to-square me-2"></i> Registrar Producto`;
     }
 
-
-    // Restauramos el botón
-    const boton =
-        document.getElementById("btnGuardar");
-
-
+    const boton = document.getElementById("btnGuardar");
     if (boton) {
-
-        boton.innerHTML =
-            `<i class="fa-solid fa-floppy-disk me-1"></i>
-             Guardar Producto`;
-
+        boton.innerHTML = `<i class="fa-solid fa-floppy-disk me-1"></i> Guardar Producto`;
     }
 
 }
 
 
 // =============================================================
-// INICIAR CARGA DE PRODUCTOS
+// BUSCAR PRODUCTO POR ID (GET /productos/{id})
 // =============================================================
 
-cargarProductos();
-
-// =========================================================================
-// BUSCAR PRODUCTO POR ID (GET /productos/{id})
-// =========================================================================
 async function buscarProductoPorId() {
     const inputId = document.getElementById("buscarId");
+    if (!inputId) return;
+
     const id = inputId.value.trim();
 
     if (!id) {
@@ -695,7 +383,6 @@ async function buscarProductoPorId() {
     }
 
     try {
-        // Hace la petición al endpoint con PathVariable de Spring Boot
         const respuesta = await fetch(`${API_URL}/${id}`);
 
         if (!respuesta.ok) {
@@ -707,30 +394,29 @@ async function buscarProductoPorId() {
         const tabla = document.getElementById("tablaProductos");
         if (!tabla) return;
 
-        // Si el endpoint devuelve null o un objeto vacío
         if (!producto || !producto.id) {
             alert(`No se encontró ningún producto con el ID ${id}`);
             return;
         }
 
-        // Renderiza únicamente el producto encontrado en la tabla
+        const stockMinimo = producto.stock_minimo ?? producto.stockMinimo ?? 0;
+
         tabla.innerHTML = `
             <tr>
                 <td>${producto.id}</td>
-                <td class="fw-bold">${producto.codigo}</td>
+                <td>${producto.codigo}</td>
                 <td>${producto.nombre}</td>
-                <td><span class="badge bg-secondary">${producto.categoria || 'N/A'}</span></td>
-                <td class="text-success fw-bold">$${Number(producto.precio).toLocaleString()}</td>
-                <td class="text-center">
-                    <span class="badge ${producto.cantidad > 5 ? 'bg-success' : (producto.cantidad > 0 ? 'bg-warning text-dark' : 'bg-danger')}">
-                        ${producto.cantidad}
-                    </span>
-                </td>
-                <td class="text-center">
-                    <button class="btn btn-warning btn-sm me-1" onclick="iniciarEdicion(${producto.id})">
-                        <i class="fa-solid fa-pen"></i> Editar
+                <td>${producto.categoria || 'N/A'}</td>
+                <td>${producto.marca || 'N/A'}</td>
+                <td>${producto.proveedor || 'N/A'}</td>
+                <td>$${Number(producto.precio).toLocaleString("es-CO")}</td>
+                <td>${producto.cantidad}</td>
+                <td>${stockMinimo}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm mb-1" onclick="editarProducto(${producto.id})">
+                        <i class="fa-solid fa-pen"></i> Actualizar
                     </button>
-                    <button class="btn btn-danger btn-sm" onclick="eliminarProducto(${producto.id}, '${producto.codigo}')">
+                    <button class="btn btn-danger btn-sm mb-1" onclick="eliminarProducto(${producto.id})">
                         <i class="fa-solid fa-trash"></i> Eliminar
                     </button>
                 </td>
@@ -745,5 +431,10 @@ async function buscarProductoPorId() {
 function limpiarBusqueda() {
     const inputId = document.getElementById("buscarId");
     if (inputId) inputId.value = "";
-    cargarProductos(); // Vuelve a listar todos los productos de MySQL
+    cargarProductos();
 }
+
+// =============================================================
+// INICIAR CARGA DE PRODUCTOS
+// =============================================================
+cargarProductos();
