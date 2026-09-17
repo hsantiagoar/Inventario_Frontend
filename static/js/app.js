@@ -377,30 +377,30 @@ function cancelarEdicion() {
 // =============================================================
 
 async function buscarProductoPorId() {
-    const inputId = document.getElementById("buscarId");
-    if (!inputId) return;
+    const inputNombre = document.getElementById("buscarNombre");
+    if (!inputNombre) return;
 
-    const id = inputId.value.trim();
+    const nombre = inputNombre.value.trim();
 
-    if (!id) {
-        alert("Por favor ingresa un ID para buscar.");
+    if (!nombre) {
+        alert("Por favor ingresa un nombre para buscar.");
         return;
     }
 
     try {
-        const respuesta = await fetch(`${API_URL}/${id}`);
+        const respuesta = await fetch(`${API_URL}/${nombre}`);
 
         if (!respuesta.ok) {
-            alert(`No se encontró ningún producto con el ID ${id}`);
+            alert(`No se encontró ningún producto con el nombre ${nombre}`);
             return;
         }
 
         const producto = await respuesta.json();
-        const tabla = document.getElementById("tablaProductos");
+        const tabla = document.getElementByNombre("tablaProductos");
         if (!tabla) return;
 
-        if (!producto || !producto.id) {
-            alert(`No se encontró ningún producto con el ID ${id}`);
+        if (!producto || !producto.nombre) {
+            alert(`No se encontró ningún producto con el nombre ${nombre}`);
             return;
         }
 
