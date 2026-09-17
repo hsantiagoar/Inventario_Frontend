@@ -2,16 +2,15 @@
 // CONFIGURACIÓN DE LA API
 // =============================================================
 
-// Dirección del backend de Spring Boot
+// Dirección del backend en Spring Boot (Railway)
 const API_URL = "https://inventariobackend-production-23e3.up.railway.app/productos";
 
-
-// Variable que guarda el ID del producto que estamos editando
+// Variable que guarda el ID del producto cuando estamos en modo edición
 let idProductoEditando = null;
 
 
 // =============================================================
-// READ - CARGAR PRODUCTOS
+// READ - CARGAR PRODUCTOS EN LA TABLA
 // =============================================================
 
 async function cargarProductos() {
@@ -21,90 +20,48 @@ async function cargarProductos() {
         // Realizamos una petición GET al backend
         const respuesta = await fetch(API_URL);
 
-        // Verificamos si la respuesta fue correcta
         if (!respuesta.ok) {
             throw new Error("Error al obtener los productos");
         }
 
-        // Convertimos la respuesta a JSON
         const productos = await respuesta.json();
 
-
-        // Buscamos la tabla
+        // Buscamos la tabla en el HTML
         const tabla = document.getElementById("tablaProductos");
 
-
-        // Si no existe la tabla, detenemos la función
+        // Si la página actual no tiene tabla (ej: index.html o registrar.html), detenemos
         if (!tabla) {
             return;
         }
 
-
-        // =====================================================
-        // LIMPIAR TABLA
-        // =====================================================
+        // Limpiamos la tabla para no duplicar datos
         tabla.innerHTML = "";
 
-
-        // Variable para calcular el valor total
         let totalInventario = 0;
 
-
-        // =====================================================
-        // RECORRER PRODUCTOS
-        // =====================================================
-
+        // Recorremos los productos que devolvió la base de datos
         productos.forEach(producto => {
 
-            // Calculamos el valor del inventario
             totalInventario += producto.precio * producto.cantidad;
 
-
-            // =================================================
-            // STOCK MÍNIMO
-            // =================================================
             const stockMinimo =
                 producto.stock_minimo ??
                 producto.stockMinimo ??
                 0;
 
-
-            // =================================================
-            // AGREGAR PRODUCTO A LA TABLA (ORDEN CORREGIDO)
-            // =================================================
+            // Orden exacto de columnas: ID, Código, Nombre, Categoría, Proveedor, Precio, Cantidad, Stock Mínimo, Marca, Acciones
             tabla.innerHTML += `
                 <tr>
-
-                    <!-- 1. ID -->
                     <td>${producto.id}</td>
-
-                    <!-- 2. Código -->
                     <td>${producto.codigo}</td>
-
-                    <!-- 3. Nombre -->
                     <td>${producto.nombre}</td>
-
-                    <!-- 4. Categoría -->
                     <td>${producto.categoria || 'N/A'}</td>
-
-                    <!-- 5. Proveedor -->
                     <td>${producto.proveedor || 'N/A'}</td>
-
-                    <!-- 6. Precio -->
                     <td>$${Number(producto.precio).toLocaleString("es-CO")}</td>
-
-                    <!-- 7. Cantidad -->
                     <td>${producto.cantidad}</td>
-
-                    <!-- 8. Stock mínimo -->
                     <td>${stockMinimo}</td>
-
-                    <!-- 9. Marca -->
                     <td>${producto.marca || 'N/A'}</td>
-
-                    <!-- 10. Acciones -->
                     <td>
-                        <!-- Botón actualizar -->
                         <button
                             type="button"
                             class="btn btn-warning btn-sm mb-1"
@@ -112,7 +69,6 @@ async function cargarProductos() {
                             <i class="fa-solid fa-pen"></i> Actualizar
                         </button>
 
-                        <!-- Botón eliminar -->
                         <button
                             type="button"
                             class="btn btn-danger btn-sm mb-1"
@@ -120,21 +76,16 @@ async function cargarProductos() {
                             <i class="fa-solid fa-trash"></i> Eliminar
                         </button>
                     </td>
-
                 </tr>
             `;
 
         });
 
-
-        // =====================================================
-        // MOSTRAR VALOR TOTAL DEL INVENTARIO
-        // =====================================================
+        // Mostramos el valor total del inventario si el elemento existe
         const total = document.getElementById("totalInventario");
         if (total) {
             total.textContent = "$" + totalInventario.toLocaleString("es-CO");
         }
-
 
     } catch (error) {
         console.error("Error al cargar productos:", error);
@@ -144,7 +95,7 @@ async function cargarProductos() {
 
 
 // =============================================================
-// POST - REGISTRAR PRODUCTO
+// POST - REGISTRAR PRODUCTO NUEVO
 // =============================================================
 
 const formProducto = document.getElementById("formProducto");
@@ -153,12 +104,9 @@ if (formProducto) {
 
     formProducto.addEventListener("submit", async function(event) {
 
-        // Evitamos que el formulario recargue la página
         event.preventDefault();
 
-        // =================================================
-        // OBTENER DATOS DEL FORMULARIO
-        // =================================================
+        // Construimos el objeto con los datos del formulario
         const producto = {
             codigo: document.getElementById("codigo").value,
             nombre: document.getElementById("nombre").value,
@@ -170,17 +118,12 @@ if (formProducto) {
             marca: document.getElementById("marca") ? document.getElementById("marca").value : ""
         };
 
-        // =================================================
-        // SI HAY UN ID, ESTAMOS ACTUALIZANDO
-        // =================================================
+        // Si estamos editando, ejecutamos la actualización en vez de registrar uno nuevo
         if (idProductoEditando !== null) {
             await actualizarProducto();
             return;
         }
 
-        // =================================================
-        // REGISTRAR PRODUCTO
-        // =================================================
         try {
 
             const respuesta = await fetch(API_URL, {
@@ -215,7 +158,7 @@ if (formProducto) {
 
 
 // =============================================================
-// EDITAR PRODUCTO
+// CARGAR DATOS AL FORMULARIO PARA EDITAR
 // =============================================================
 
 async function editarProducto(id) {
@@ -232,9 +175,7 @@ async function editarProducto(id) {
         const producto = await respuesta.json();
         idProductoEditando = id;
 
-        // =====================================================
-        // CARGAR DATOS EN EL FORMULARIO
-        // =====================================================
+        // Llenamos los inputs con la información actual del producto
         if (document.getElementById("codigo")) document.getElementById("codigo").value = producto.codigo || "";
         if (document.getElementById("nombre")) document.getElementById("nombre").value = producto.nombre || "";
         if (document.getElementById("categoria")) document.getElementById("categoria").value = producto.categoria || "";
@@ -246,9 +187,7 @@ async function editarProducto(id) {
         const stockMinimo = producto.stock_minimo ?? producto.stockMinimo ?? 0;
         if (document.getElementById("stock_minimo")) document.getElementById("stock_minimo").value = stockMinimo;
 
-        // =====================================================
-        // CAMBIAR TÍTULO Y BOTÓN
-        // =====================================================
+        // Cambiamos el texto del título y del botón
         const titulo = document.getElementById("formTitulo");
         if (titulo) {
             titulo.innerHTML = `<i class="fa-solid fa-pen-to-square me-2"></i> Actualizar Producto`;
@@ -324,6 +263,7 @@ async function eliminarProducto(id) {
     if (!confirmar) return;
 
     try {
+
         const respuesta = await fetch(`${API_URL}/${id}`, {
             method: "DELETE"
         });
@@ -404,7 +344,7 @@ async function buscarProductoPorNombre() {
             return;
         }
 
-        // Limpiamos y renderizamos los productos encontrados
+        // Limpiamos y pintamos los resultados encontrados
         tabla.innerHTML = "";
         let totalInventario = 0;
 
@@ -457,22 +397,31 @@ function limpiarBusqueda() {
     cargarProductos();
 }
 
-// Mostrar el total de productos en la página principal (index.html)
+
+// =============================================================
+// CONTADOR DE PRODUCTOS PARA LA PÁGINA PRINCIPAL (index.html)
+// =============================================================
+
 document.addEventListener("DOMContentLoaded", async function () {
     const contenedorTotalIndex = document.getElementById("totalProductosIndex");
     
-    // Solo se ejecuta si el elemento existe en la página actual (index.html)
+    // Solo se ejecuta si estamos en index.html
     if (contenedorTotalIndex) {
         try {
-            const productos = await window.obtenerProductos();
-            // Mostramos la cantidad total de elementos en la lista
-            contenedorTotalIndex.textContent = productos.length;
+            const respuesta = await fetch(API_URL);
+            if (respuesta.ok) {
+                const productos = await respuesta.json();
+                contenedorTotalIndex.textContent = productos.length;
+            } else {
+                contenedorTotalIndex.textContent = "0";
+            }
         } catch (error) {
-            console.error("Error al obtener el total de productos:", error);
+            console.error("Error al obtener el total de productos en index:", error);
             contenedorTotalIndex.textContent = "0";
         }
     }
 });
+
 
 // =============================================================
 // INICIAR CARGA DE PRODUCTOS
